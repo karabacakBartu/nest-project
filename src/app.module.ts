@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
-import {UsersModule} from "./users/users.module";
+import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
+import getDatabaseUrl from './common/database/database';
 
 @Module({
-  imports: [UsersModule,MongooseModule.forRoot("mongodb+srv://bartu:156612@cluster0.itgsdyh.mongodb.net/Library?retryWrites=true&w=majority")],
+  imports: [
+    UsersModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(getDatabaseUrl()),
+  ],
   controllers: [],
   providers: [],
 })
