@@ -11,6 +11,9 @@ export class User {
   surname: string;
 
   @Prop()
+  email: string;
+
+  @Prop()
   phoneNumber: string;
 
   @Prop()
@@ -22,6 +25,16 @@ export class User {
     },
   })
   bookRights: number;
+
+  @Prop()
+  gender: string;
+
+  @Prop({
+    default(): string {
+      return 'Empty';
+    },
+  })
+  takenBooks: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

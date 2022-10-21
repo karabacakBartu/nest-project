@@ -1,3 +1,5 @@
+import { ConfigService } from '@nestjs/config';
+
 const getDatabaseUrl = (): string => {
   let user = '';
   let pass = '';
