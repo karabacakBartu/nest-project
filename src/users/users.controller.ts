@@ -27,6 +27,18 @@ export class UsersController {
     return this.responseService.compile(response, GetUsersResponse);
   }
 
+  @Get('/user/:id')
+  @ApiOkResponse({
+    status: 200,
+    description: 'Users',
+    schema: GetUsersResponse,
+  })
+  async getUser(@Param() param) {
+    const result = await this.userService.getUser(param.id);
+    const response = { statusCode: 201, data: result, message: 'OK' };
+    return response;
+  }
+
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     const result = await this.userService.createUser(createUserDto);

@@ -41,11 +41,12 @@ export class User {
 interface IBook {
   _id: Types.ObjectId;
   bookName: string;
+  author: string;
+  kind: string;
+  vol: number;
+  releaseDate: Date;
   takingDate: Date;
   returnDate: Date;
-  kindOfBook: string;
-  vol: number;
-  author: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -17,6 +17,12 @@ export class UsersService {
     return await this.usersRepository.createUser(createUserDto);
   }
 
+  async getUser(userId: string) {
+    const userObjId = new Types.ObjectId(userId);
+
+    return await this.usersRepository.getUser(userObjId);
+  }
+
   async updateUser(userUpdateDto: UpdateUserDto, userId: string) {
     const userObjId = new Types.ObjectId(userId);
     const user = await this.usersRepository.getUser(userObjId);
