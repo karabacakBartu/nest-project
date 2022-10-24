@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -31,10 +32,20 @@ export class User {
 
   @Prop({
     default(): string {
-      return 'Empty';
+      return null;
     },
   })
-  takenBooks: string;
+  takenBooks: IBook[];
+}
+
+interface IBook {
+  _id: Types.ObjectId;
+  bookName: string;
+  takingDate: Date;
+  returnDate: Date;
+  kindOfBook: string;
+  vol: number;
+  author: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

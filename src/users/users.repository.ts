@@ -1,8 +1,9 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create.user.dto';
+import { IUpdateUserInputInterface } from './interface/update.user.input.interface';
 
 @Injectable()
 export class UsersRepository {
@@ -19,5 +20,24 @@ export class UsersRepository {
     return await this.userModel.create(createUserDto);
   }
 
-  async getUser() {}
+  async getUser(userId: Types.ObjectId) {
+    const match = {
+      _id: userId,
+    };
+
+    return await this.userModel.findOne(match).exec();
+  }
+
+  async updateUser(
+    updateUserInputInterface: IUpdateUserInputInterface,
+    userId: Types.ObjectId,
+  ) {
+    const match = {
+      _id: userId,
+    };
+
+    const update = updateUserInputInterface;
+
+    return await this.userModel.updateOne(match, update).exec();
+  }
 }

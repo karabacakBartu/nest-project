@@ -10,6 +10,7 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   new Swagger(app).createDocument();
+  app.enableCors();
   await app.listen(3000);
   console.log('SA');
 }
