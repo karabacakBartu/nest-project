@@ -19,7 +19,7 @@ export class Book {
   @Prop()
   releaseDate: Date;
 
-  @Prop()
+  @Prop({ type: Object })
   shelf: IShelf;
 
   @Prop({
@@ -38,6 +38,7 @@ export class Book {
 }
 
 interface IShelf {
+  shelfCategory: string;
   vertical: number;
   horizontal: number;
 }
