@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from './schema/book.schema';
 import { CreateBookDto } from './dto/create.book.dto';
 import { GetBookDto } from './dto/get.book.dto';
+import { UpdateBookDto } from './dto/update.book.dto';
 
 @Injectable()
 export class BooksRepository {
@@ -22,5 +23,13 @@ export class BooksRepository {
 
   async getBook(getBookDto: GetBookDto) {
     return await this.bookModel.find(getBookDto).exec();
+  }
+
+  async updateBook(updateBookDto: UpdateBookDto, _id: Types.ObjectId) {
+    const match = {
+      _id,
+    };
+
+    return await this.bookModel.updateOne(match, updateBookDto).exec();
   }
 }
