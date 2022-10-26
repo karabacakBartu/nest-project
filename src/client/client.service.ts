@@ -11,6 +11,7 @@ import { TakeBookDto } from './dto/take.book.dto';
 import { ReturnDateDto } from './dto/return.date.dto';
 import { UsersService } from '../users/users.service';
 import { RebateBookDto } from './dto/rebate.book.dto';
+import { UpdateReturndateDto } from './dto/update.returndate.dto';
 
 @Injectable()
 export class ClientService {
@@ -74,5 +75,23 @@ export class ClientService {
       await this.booksService.cleanReturnAndTakingDate(bookObjId, bookName);
       return rebate;
     }
+  }
+
+  async updateReturnDate(
+    updateReturndateDto: UpdateReturndateDto,
+    userId: string,
+  ) {
+    const userObjId = new Types.ObjectId(userId);
+
+    const { returnDate, bookId, bookName } = updateReturndateDto;
+
+    const bookObjId = new Types.ObjectId(bookId);
+
+    return await this.clientRepository.updateReturndDate(
+      returnDate,
+      bookObjId,
+      bookName,
+      userObjId,
+    );
   }
 }

@@ -60,4 +60,28 @@ export class ClientRepository {
       },
     ).exec();
   }
+
+  async updateReturndDate(
+    returnDate: Date,
+    bookId: Types.ObjectId,
+    bookName: string,
+    userId: Types.ObjectId,
+  ) {
+    console.log(returnDate, 'client repo');
+
+    const match = {
+      _id: userId,
+      'takenBooks._id': bookId,
+      'takenBooks.bookName': bookName,
+    };
+
+    const update = {
+      $set: { 'takenBooks.$[el].returnDate': returnDate },
+    };
+
+    return await this.UserModel.findOneAndUpdate(match, update, {
+      arrayFilters: [{ 'el._id': bookId }],
+      new: true,
+    }).exec();
+  }
 }
