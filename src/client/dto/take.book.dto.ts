@@ -8,7 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class GetBookDto {
+export class TakeBookDto {
   @IsOptional()
   @ApiProperty()
   @IsDefined()

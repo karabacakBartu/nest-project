@@ -5,6 +5,7 @@ import { Book, BookDocument } from './schema/book.schema';
 import { CreateBookDto } from './dto/create.book.dto';
 import { GetBookDto } from './dto/get.book.dto';
 import { UpdateBookDto } from './dto/update.book.dto';
+import { ReturnDateDto } from '../client/dto/return.date.dto';
 
 @Injectable()
 export class BooksRepository {
@@ -31,5 +32,31 @@ export class BooksRepository {
     };
 
     return await this.bookModel.updateOne(match, updateBookDto).exec();
+  }
+
+  async getOneBook(getBookDto: GetBookDto) {
+    return await this.bookModel.find(getBookDto).exec();
+  }
+
+  async takeBook(getBookDto: GetBookDto, returnDateDto: ReturnDateDto) {
+    Object.assign(getBookDto, { takingDate: null });
+    console.log(getBookDto);
+    const update = {
+      takingDate: Date.now(),
+      returnDate: returnDateDto.returnDate,
+    };
+
+    return await this.bookModel
+      .findOneAndUpdate(getBookDto, update, { new: true })
+      .exec();
+  }
+
+  async cleanReturnAndTakingDate(bookId: Types.ObjectId, bookName: string) {
+    return await this.bookModel
+      .updateOne(
+        { _id: bookId, bookName },
+        { returnDate: null, takingDate: null },
+      )
+      .exec();
   }
 }
