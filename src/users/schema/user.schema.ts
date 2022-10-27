@@ -36,6 +36,9 @@ export class User {
     },
   })
   takenBooks: IBook[];
+
+  @Prop()
+  password: string;
 }
 
 interface IBook {

@@ -5,12 +5,14 @@ import { ConfigModule } from '@nestjs/config';
 import getDatabaseUrl from './common/database/database';
 import { BooksModule } from './books/books.module';
 import { ClientModule } from './client/client.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     UsersModule,
     BooksModule,
     ClientModule,
+    AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(getDatabaseUrl()),
   ],
