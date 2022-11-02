@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../users/schema/user.schema';
 import { ITakeBookInputInterface } from './interface/take.book.input.interface';
+import { IRegisterInputInterface } from '../auth/interface/register.input.interface';
 
 @Injectable()
 export class ClientRepository {
@@ -83,5 +84,9 @@ export class ClientRepository {
       arrayFilters: [{ 'el._id': bookId }],
       new: true,
     }).exec();
+  }
+
+  async registerUser(registerInputInterface: IRegisterInputInterface) {
+    return await new this.UserModel(registerInputInterface).save();
   }
 }

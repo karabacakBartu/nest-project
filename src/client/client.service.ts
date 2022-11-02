@@ -12,6 +12,7 @@ import { ReturnDateDto } from './dto/return.date.dto';
 import { UsersService } from '../users/users.service';
 import { RebateBookDto } from './dto/rebate.book.dto';
 import { UpdateReturndateDto } from './dto/update.returndate.dto';
+import { IRegisterInputInterface } from '../auth/interface/register.input.interface';
 
 @Injectable()
 export class ClientService {
@@ -93,5 +94,9 @@ export class ClientService {
       bookName,
       userObjId,
     );
+  }
+
+  async registerUser(registerInputInterface: IRegisterInputInterface) {
+    return await this.clientRepository.registerUser(registerInputInterface);
   }
 }

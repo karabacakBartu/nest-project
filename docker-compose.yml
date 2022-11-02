@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  dev:
+    container_name: server-dev
+    image: server-dev:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm run start:debug
+    ports:
+      - 3000:3000
+      - 9229:9229
+    networks:
+      - server-network
+    volumes:
+      - .:/nest-project/src/app
+      - /nest-project/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URL: root:mongodb+srv://bartu:156612@cluster0.itgsdyh.mongodb.net/Library?retryWrites=true&w=majority
+
+
+  mongodb:
+    image: mongo:5.0.0
+    container_name: server-mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=bartu
+      - MONGO_INITDB_ROOT_PASSWORD=156612
+    networks:
+      - server-network
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+networks:
+  server-network:

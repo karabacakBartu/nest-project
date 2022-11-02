@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -35,16 +35,14 @@ export class UsersController {
   })
   async getUser(@Param() param) {
     const result = await this.userService.getUser(param.id);
-    const response = { statusCode: 201, data: result, message: 'OK' };
-    return response;
+    return { statusCode: 201, data: result, message: 'OK' };
   }
 
-  @Post('/create-user')
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    const result = await this.userService.createUser(createUserDto);
-    const response = { statusCode: 201, data: result, message: 'OK' };
-    return response;
-  }
+  // @Post('/create-user')
+  // async createUser(@Body() createUserDto: CreateUserDto) {
+  //   const result = await this.userService.createUser(createUserDto);
+  //   return { statusCode: 201, data: result, message: 'OK' };
+  // }
 
   @Post('/:id/update')
   async updateUser(
@@ -52,7 +50,6 @@ export class UsersController {
     @Param() param: MongoDbIdDto,
   ) {
     const result = await this.userService.updateUser(updateUserDto, param.id);
-    const response = { statusCode: 201, data: result, message: 'OK' };
-    return response;
+    return { statusCode: 201, data: result, message: 'OK' };
   }
 }
