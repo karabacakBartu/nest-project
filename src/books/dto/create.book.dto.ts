@@ -21,6 +21,7 @@ export class CreateBookDto {
 
   @ApiProperty()
   @IsDefined()
+  @Transform((vol) => (vol.value = Number.parseInt(vol.value)))
   @IsNumber()
   @IsNotEmpty()
   vol: number;
@@ -33,8 +34,17 @@ export class CreateBookDto {
   @ApiProperty()
   @IsDefined()
   @IsNotEmpty()
-  @Transform((shelf) => (shelf.value = shelf.value.shelfCategory.toUpperCase()))
-  shelf: IShelf;
+  shelfCategory: string;
+
+  @ApiProperty()
+  @IsDefined()
+  @IsNotEmpty()
+  vertical: number;
+
+  @ApiProperty()
+  @IsDefined()
+  @IsNotEmpty()
+  horizontal: number;
 }
 
 interface IShelf {

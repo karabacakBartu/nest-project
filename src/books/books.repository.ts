@@ -6,6 +6,7 @@ import { CreateBookDto } from './dto/create.book.dto';
 import { GetBookDto } from './dto/get.book.dto';
 import { UpdateBookDto } from './dto/update.book.dto';
 import { ReturnDateDto } from '../client/dto/return.date.dto';
+import { ICreateBookInterface } from './interface/create.user.interface';
 
 @Injectable()
 export class BooksRepository {
@@ -14,8 +15,8 @@ export class BooksRepository {
     private readonly bookModel: Model<BookDocument>,
   ) {}
 
-  async createBook(createBookDto: CreateBookDto) {
-    return await this.bookModel.create(createBookDto);
+  async createBook(createInput: ICreateBookInterface) {
+    return await this.bookModel.create(createInput);
   }
 
   async getBooks() {

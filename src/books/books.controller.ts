@@ -27,11 +27,10 @@ export class BooksController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('/create-book')
   async createBook(
-    // @Body() createBookDto: CreateBookDto,
+    @Body() createBookDto: CreateBookDto,
     @UploadedFile() file?,
   ) {
-    // const result = await this.booksService.createBook(createBookDto, file);
-    const result = await this.booksService.createBook(file);
+    const result = await this.booksService.createBook(createBookDto, file);
     return { statusCode: 201, data: result, message: 'OK' };
   }
 
