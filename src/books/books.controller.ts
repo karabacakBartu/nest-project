@@ -1,11 +1,20 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ResponseService } from '../response/response.service';
 import { MongoDbIdDto } from '../common/dto/mongoDbId.dto';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create.book.dto';
 import { GetBookDto } from './dto/get.book.dto';
 import { UpdateBookDto } from './dto/update.book.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Books')
 @Controller('books')
@@ -15,11 +24,15 @@ export class BooksController {
     private readonly responseService: ResponseService,
   ) {}
 
+  @UseInterceptors(FileInterceptor('file'))
   @Post('/create-book')
-  async createBook(@Body() createBookDto: CreateBookDto) {
-    const result = await this.booksService.createBook(createBookDto);
-    const response = { statusCode: 201, data: result, message: 'OK' };
-    return response;
+  async createBook(
+    // @Body() createBookDto: CreateBookDto,
+    @UploadedFile() file?,
+  ) {
+    // const result = await this.booksService.createBook(createBookDto, file);
+    const result = await this.booksService.createBook(file);
+    return { statusCode: 201, data: result, message: 'OK' };
   }
 
   @Post('/update-book/:id')

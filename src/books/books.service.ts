@@ -6,13 +6,25 @@ import { UpdateBookDto } from './dto/update.book.dto';
 import { Types } from 'mongoose';
 import { TakeBookDto } from '../client/dto/take.book.dto';
 import { ReturnDateDto } from '../client/dto/return.date.dto';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly booksRepository: BooksRepository) {}
+  constructor(
+    private readonly booksRepository: BooksRepository,
+    private readonly s3Service: S3Service,
+  ) {}
 
-  async createBook(createBookDto: CreateBookDto) {
-    return await this.booksRepository.createBook(createBookDto);
+  // async createBook(createBookDto: CreateBookDto, file) {
+  async createBook(file) {
+    const url = await this.s3Service.s3_upload(
+      file.buffer,
+      file.originalname,
+      'foto',
+    );
+
+    console.log(url);
+    // return await this.booksRepository.createBook(createBookDto);
   }
 
   async getBooks() {
