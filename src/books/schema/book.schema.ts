@@ -35,9 +35,6 @@ export class Book {
     },
   })
   returnDate: Date;
-
-  @Prop()
-  url: string;
 }
 
 interface IShelf {

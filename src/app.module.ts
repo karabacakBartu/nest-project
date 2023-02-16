@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import getDatabaseUrl from './common/database/database';
 import { BooksModule } from './books/books.module';
 import { ClientModule } from './client/client.module';
+import { AuthModule } from './auth/auth.module';
 import { S3Module } from './s3/s3.module';
 
 @Module({
@@ -12,9 +13,11 @@ import { S3Module } from './s3/s3.module';
     UsersModule,
     BooksModule,
     ClientModule,
+    AuthModule,
     S3Module,
     ConfigModule.forRoot({ isGlobal: true }),
     ConfigModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(getDatabaseUrl()),
   ],
   controllers: [],

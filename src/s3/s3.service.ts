@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
+
 import { getSignedUrl } from '@aws-sdk/cloudfront-signer';
 import { ConfigService } from '@nestjs/config';
 
@@ -60,8 +61,6 @@ export class S3Service {
       dateLessThan: '2030-02-10',
       url: `${this.CDNUrl}/${folder}/${filename}`,
     };
-    const signedUrl = getSignedUrl(signingParams);
-    console.log(signedUrl, 'heheheheheh');
-    return signedUrl;
+    return getSignedUrl(signingParams);
   }
 }

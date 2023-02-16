@@ -7,7 +7,6 @@ import { Types } from 'mongoose';
 import { TakeBookDto } from '../client/dto/take.book.dto';
 import { ReturnDateDto } from '../client/dto/return.date.dto';
 import { S3Service } from '../s3/s3.service';
-import { ICreateBookInterface } from './interface/create.user.interface';
 
 @Injectable()
 export class BooksService {
@@ -17,37 +16,14 @@ export class BooksService {
   ) {}
 
   async createBook(createBookDto: CreateBookDto, file) {
-    const {
-      bookName,
-      author,
-      kind,
-      releaseDate,
-      shelfCategory,
-      vertical,
-      horizontal,
-      vol,
-    } = createBookDto;
     const url = await this.s3Service.s3_upload(
       file.buffer,
       file.originalname,
       'foto',
     );
 
-    const createInput: ICreateBookInterface = {
-      bookName,
-      author,
-      kind,
-      releaseDate,
-      shelf: {
-        shelfCategory,
-        vertical,
-        horizontal,
-      },
-      vol,
-      url,
-    };
-    const a = await this.booksRepository.createBook(createInput);
-    console.log(a, 'aa');
+    console.log(url);
+    // return await this.booksRepository.createBook(createBookDto);
   }
 
   async getBooks() {

@@ -21,7 +21,6 @@ export class CreateBookDto {
 
   @ApiProperty()
   @IsDefined()
-  @Transform((vol) => (vol.value = Number.parseInt(vol.value)))
   @IsNumber()
   @IsNotEmpty()
   vol: number;
