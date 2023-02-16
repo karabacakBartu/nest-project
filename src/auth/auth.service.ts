@@ -1,9 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ClientService } from '../client/client.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { IRegisterInputInterface } from './interface/register.input.interface';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthenticationDetails,
@@ -30,13 +29,21 @@ export class AuthService {
     });
   }
 
+  //User information send to cognito user pool
   registerUser(registerDto: RegisterDto) {
     const { name, email, password } = registerDto;
     return new Promise((resolve, reject) => {
+      //Here is user information sending
       return this.userPool.signUp(
         name,
         password,
-        [new CognitoUserAttribute({ Name: 'email', Value: email })],
+        [
+          new CognitoUserAttribute({ Name: 'email', Value: email }),
+          new CognitoUserAttribute({
+            Name: 'profile',
+            Value: new Types.ObjectId().toHexString(),
+          }),
+        ],
         null,
         (err, result) => {
           if (!result) {
@@ -49,10 +56,9 @@ export class AuthService {
     });
   }
 
+  //Authentication phase is here be like login
   authenticateUser(authDto: AuthDto) {
     const { name, password } = authDto;
-    console.log(name, 'name');
-    console.log(password, 'password');
     const authenticationDetails = new AuthenticationDetails({
       Username: name,
       Password: password,
@@ -62,13 +68,19 @@ export class AuthService {
       Username: name,
       Pool: this.userPool,
     };
-    console.log(userData, 'userData');
+
+    //Here  creat tokens and get verify knowledge
     const newUser = new CognitoUser(userData);
-    console.log(newUser, 'newUser');
     return new Promise((resolve, reject) => {
       return newUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
-          resolve(result);
+          const token = {
+            accessToken: result.getAccessToken().getJwtToken(),
+            idToken: result.getIdToken().getJwtToken(),
+            refreshToken: result.getRefreshToken().getToken(),
+          };
+
+          return resolve({ statusCode: 200, response: token });
         },
         onFailure: (err) => {
           reject(err);
@@ -76,24 +88,6 @@ export class AuthService {
       });
     });
   }
-  //
-  // async register(registerDto: RegisterDto) {
-  //   const { password, email, name, surname, gender, phoneNumber, birthDate } =
-  //     registerDto;
-  //   const hashedPass = await this.bcryptHash(password);
-  //
-  //   const registerInputInterface: IRegisterInputInterface = {
-  //     email,
-  //     name,
-  //     surname,
-  //     gender,
-  //     phoneNumber,
-  //     birthDate,
-  //     password: hashedPass,
-  //   };
-  //
-  //   return await this.clientService.registerUser(registerInputInterface);
-  // }
 
   async bcryptHash(password: string) {
     return await bcrypt.hash(password, 10);
