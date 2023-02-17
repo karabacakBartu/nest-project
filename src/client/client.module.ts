@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ClientController } from './client.controller';
 import { ClientService } from './client.service';
@@ -7,6 +7,7 @@ import { BooksModule } from '../books/books.module';
 import { Book, BookSchema } from '../books/schema/book.schema';
 import { ClientRepository } from './client.repository';
 import { S3Module } from '../s3/s3.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [

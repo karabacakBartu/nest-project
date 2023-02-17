@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -9,10 +11,9 @@ import { Types } from 'mongoose';
 import { ITakeBookInputInterface } from './interface/take.book.input.interface';
 import { TakeBookDto } from './dto/take.book.dto';
 import { ReturnDateDto } from './dto/return.date.dto';
-import { UsersService } from '../users/users.service';
 import { RebateBookDto } from './dto/rebate.book.dto';
 import { UpdateReturndateDto } from './dto/update.returndate.dto';
-import { IRegisterInputInterface } from '../auth/interface/register.input.interface';
+import { CreateUserDto } from './dto/create.user.dto';
 
 @Injectable()
 export class ClientService {
@@ -94,9 +95,5 @@ export class ClientService {
       bookName,
       userObjId,
     );
-  }
-
-  async registerUser(registerInputInterface: IRegisterInputInterface) {
-    return await this.clientRepository.registerUser(registerInputInterface);
   }
 }

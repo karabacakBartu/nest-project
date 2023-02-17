@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../users/schema/user.schema';
 import { ITakeBookInputInterface } from './interface/take.book.input.interface';
-import { IRegisterInputInterface } from '../auth/interface/register.input.interface';
+import { CreateUserDto } from './dto/create.user.dto';
 
 @Injectable()
 export class ClientRepository {
@@ -86,7 +86,7 @@ export class ClientRepository {
     }).exec();
   }
 
-  async registerUser(registerInputInterface: IRegisterInputInterface) {
-    return await new this.UserModel(registerInputInterface).save();
+  async createUser(createUserDto: CreateUserDto) {
+    return await new this.UserModel(createUserDto).save();
   }
 }

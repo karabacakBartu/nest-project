@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientService } from './client.service';
 import { MongoDbIdDto } from '../common/dto/mongoDbId.dto';

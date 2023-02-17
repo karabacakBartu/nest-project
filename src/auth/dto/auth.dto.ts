@@ -11,18 +11,23 @@ import { Transform } from 'class-transformer';
 import { IsGenderValid } from '../../common/custom-class-validation/isGender';
 import { Match } from '../../common/custom-class-validation/isMatch';
 
-export class AuthDto {
+export class LoginDto {
   @ApiProperty()
-  @MaxLength(16, { message: 'Name must have maximum 16 characters.' })
+  @MaxLength(32, { message: 'Name must have maximum 16 characters.' })
   @MinLength(2, { message: 'Name must have minimum 2 characters.' })
   @IsDefined()
   @IsNotEmpty()
-  name: string;
+  email: string;
 
   @ApiProperty()
-  @MaxLength(16, { message: 'Name must have maximum 16 characters.' })
+  @MaxLength(32, { message: 'Name must have maximum 16 characters.' })
   @MinLength(2, { message: 'Name must have minimum 2 characters.' })
   @IsDefined()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty()
+  @IsDefined()
+  @IsNotEmpty()
+  code: string;
 }

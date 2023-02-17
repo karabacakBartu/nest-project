@@ -7,11 +7,11 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseService } from '../response/response.service';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/auth.dto';
+import { LoginDto } from './dto/auth.dto';
 import { CognitoGuard } from './interface/cognito.guard';
 
 @ApiTags('Auth')
@@ -34,12 +34,16 @@ export class AuthController {
   }
 
   @Post('req')
-  async login(@Body() authDto: AuthDto) {
-    const result = await this.authService.authenticateUser(authDto);
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'When the code is invalid.',
+  })
+  async login(@Body() authDto: LoginDto) {
+    const result = await this.authService.login(authDto);
     return { statusCode: 201, data: result, message: 'OK' };
   }
 
   @UseGuards(CognitoGuard)
-  @Post()
+  @Post('try')
   async check(@Body() body) {}
 }

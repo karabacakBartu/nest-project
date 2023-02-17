@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+
+  <style>
+    .heart {
+      background-color: red;
+      display: inline-block;
+      height: 30px;
+      margin: 0 10px;
+      position: relative;
+      top: 0;
+      transform: rotate(-45deg);
+      width: 30px;
+    }
+
+    .heart:before,
+    .heart:after {
+      content: "";
+      background-color: red;
+      border-radius: 50%;
+      height: 30px;
+      position: absolute;
+      width: 30px;
+    }
+
+    .heart:before {
+      top: -15px;
+      left: 0;
+    }
+
+    .heart:after {
+      left: 15px;
+      top: 0;
+    }
+  </style>
+</head>
+<body>
+<div ><h1 style="font-size:200px "></h1>{{code}}</div>
+</body>
+</html>

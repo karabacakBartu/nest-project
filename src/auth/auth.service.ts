@@ -1,5 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { Model, Types } from 'mongoose';
 import { ClientService } from '../client/client.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
@@ -9,8 +13,13 @@ import {
   CognitoUser,
   CognitoUserAttribute,
   CognitoUserPool,
+  CognitoUserSession,
 } from 'amazon-cognito-identity-js';
-import { AuthDto } from './dto/auth.dto';
+import { LoginDto } from './dto/auth.dto';
+import { MailService } from '../mailer/mailer.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Code, CodeDoc } from './schema/code.schema';
+import AWS from 'aws-sdk';
 
 @Injectable()
 export class AuthService {
@@ -20,8 +29,11 @@ export class AuthService {
   private readonly clientId = this.configService.get<string>('aws.clientId');
 
   constructor(
+    private readonly mailService: MailService,
     private readonly clientService: ClientService,
     private readonly configService: ConfigService,
+    @InjectModel(Code.name)
+    private readonly codeModel: Model<CodeDoc>,
   ) {
     this.userPool = new CognitoUserPool({
       UserPoolId: this.userPoolId,
@@ -30,15 +42,14 @@ export class AuthService {
   }
 
   //User information send to cognito user pool
-  registerUser(registerDto: RegisterDto) {
-    const { name, email, password } = registerDto;
-    return new Promise((resolve, reject) => {
-      //Here is user information sending
+  async registerUser(registerDto: RegisterDto) {
+    const { email, password } = registerDto;
+
+    new Promise((resolve, reject) => {
       return this.userPool.signUp(
-        name,
+        email,
         password,
         [
-          new CognitoUserAttribute({ Name: 'email', Value: email }),
           new CognitoUserAttribute({
             Name: 'profile',
             Value: new Types.ObjectId().toHexString(),
@@ -46,26 +57,52 @@ export class AuthService {
         ],
         null,
         (err, result) => {
-          if (!result) {
-            reject(err);
-          } else {
+          if (result) {
             resolve(result.user);
+          } else {
+            if (err.name !== 'UsernameExistsException') {
+              console.log(err);
+              reject(err);
+            }
           }
         },
       );
     });
+
+    const code = Math.floor(Math.random() * 1000000 + 1);
+    await this.saveCode(code.toString(), email);
+    return await this.mailService.example(email, code.toString());
+  }
+
+  async login(loginDto: LoginDto) {
+    try {
+      const tokens = await this.authenticateUser(loginDto);
+
+      const id_token = tokens.getIdToken().getJwtToken();
+      const access_token = tokens.getAccessToken().getJwtToken();
+      const refresh_token = tokens.getRefreshToken().getToken();
+      const userId = tokens.getAccessToken().payload.username;
+
+      return { id_token, access_token, refresh_token, userId };
+    } catch (e) {
+      if (e.message === 'PreAuthentication failed with error INVALID_CODE.') {
+        throw new BadRequestException('INVALID_CODE');
+      }
+      throw new InternalServerErrorException('Something went wrong.');
+    }
   }
 
   //Authentication phase is here be like login
-  authenticateUser(authDto: AuthDto) {
-    const { name, password } = authDto;
+  async authenticateUser(loginDto: LoginDto): Promise<CognitoUserSession> {
+    const { email, password, code } = loginDto;
     const authenticationDetails = new AuthenticationDetails({
-      Username: name,
+      Username: email,
       Password: password,
+      ValidationData: { code: code.toString() },
     });
 
     const userData = {
-      Username: name,
+      Username: email,
       Pool: this.userPool,
     };
 
@@ -73,14 +110,8 @@ export class AuthService {
     const newUser = new CognitoUser(userData);
     return new Promise((resolve, reject) => {
       return newUser.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          const token = {
-            accessToken: result.getAccessToken().getJwtToken(),
-            idToken: result.getIdToken().getJwtToken(),
-            refreshToken: result.getRefreshToken().getToken(),
-          };
-
-          return resolve({ statusCode: 200, response: token });
+        onSuccess: function (result: CognitoUserSession) {
+          resolve(result);
         },
         onFailure: (err) => {
           reject(err);
@@ -91,5 +122,25 @@ export class AuthService {
 
   async bcryptHash(password: string) {
     return await bcrypt.hash(password, 10);
+  }
+
+  async saveCode(code: string, email: string) {
+    await this.codeModel.create({ code, email });
+  }
+
+  async invokeLambda(name) {
+    const lambda = new AWS.Lambda();
+
+    const params = {
+      FunctionName: `pre-auth`,
+      Payload: JSON.stringify({
+        name,
+      }),
+    };
+    const a = await lambda.invoke(params, function (err, data) {
+      if (err) return { err, stack: err.stack };
+      else return data;
+    });
+    console.log(a, 'invoke');
   }
 }

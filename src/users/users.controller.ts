@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import { ResponseService } from '../response/response.service';
 import { GetUsersResponse } from '../response/schema/getUsersResponse';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { MongoDbIdDto } from '../common/dto/mongoDbId.dto';
+import { CognitoGuard } from '../auth/interface/cognito.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -38,11 +39,12 @@ export class UsersController {
     return { statusCode: 201, data: result, message: 'OK' };
   }
 
-  // @Post('/create-user')
-  // async createUser(@Body() createUserDto: CreateUserDto) {
-  //   const result = await this.userService.createUser(createUserDto);
-  //   return { statusCode: 201, data: result, message: 'OK' };
-  // }
+  @UseGuards(CognitoGuard)
+  @Post('/create')
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    const result = await this.userService.createUser(createUserDto);
+    return { statusCode: 201, data: result, message: 'OK' };
+  }
 
   @Post('/:id/update')
   async updateUser(

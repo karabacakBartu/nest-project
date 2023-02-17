@@ -28,6 +28,15 @@ export class UsersRepository {
     return await this.userModel.findOne(match).exec();
   }
 
+  async isEmailExist(email: string) {
+    const match = {
+      email,
+    };
+
+    const isExist = await this.userModel.exists(match).exec();
+    return !!isExist;
+  }
+
   async updateUser(
     updateUserInputInterface: IUpdateUserInputInterface,
     userId: Types.ObjectId,

@@ -28,11 +28,4 @@ export class RegisterDto {
   // @ApiProperty()
   // @Match('password')
   // rePassword: string;
-
-  @ApiProperty()
-  @MaxLength(16, { message: 'Name must have maximum 16 characters.' })
-  @MinLength(2, { message: 'Name must have minimum 2 characters.' })
-  @IsDefined()
-  @IsNotEmpty()
-  name: string;
 }

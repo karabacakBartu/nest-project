@@ -26,11 +26,16 @@ export class CognitoGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = request.headers.authorization.split(' ')[1];
+    let token;
+    if (request.headers.authorization) {
+      token = request.headers.authorization.split(' ')[1];
+    }
     const user = await this.verifyToken(token);
+    console.log(request.path);
     if (user) {
       request.user = user;
-      console.log(request, 'reqqqqq');
+      return true;
+    } else if (request.path === '/users/create') {
       return true;
     }
     throw new BadRequestException('User is not found.');
@@ -42,16 +47,13 @@ export class CognitoGuard implements CanActivate {
       tokenUse: 'id',
       clientId: this.clientId,
     });
-    console.log(verifier);
     try {
       const payload = await verifier.verify(
         token, // the JWT as string
       );
       const user = await this.getUserInfo(payload.profile.toString());
-      console.log(payload);
       return user;
     } catch (e) {
-      console.log(e, 'eeee');
       throw new BadRequestException('id token is not valid.');
     }
   }
